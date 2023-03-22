@@ -60,7 +60,7 @@ function App() {
 
 
 	useEffect(() => {
-		setCurrentPath(location.pathname.split('/')[1])
+		setCurrentPath(location.pathname)
 	}, [location])
 
 	useEffect(() => {

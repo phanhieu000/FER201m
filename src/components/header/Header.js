@@ -14,10 +14,19 @@ function Header() {
 
     const handleSearch = () => {
         const value = searchField.current.value;
+		const localMovies = JSON.parse(localStorage.getItem('movies'))
 
-        const result = movies.filter((movie) => movie.name.toLowerCase().includes(value.toLowerCase()))
+
+        const result = localMovies.filter((movie) => movie.title.toLowerCase().includes(value.toLowerCase()))
 
         setMovies(result)
+
+        if(result.length == 0){
+            navigate('')
+            window.alert('Not Found')
+
+        }
+
     }
 
     const handleLogout = () => {

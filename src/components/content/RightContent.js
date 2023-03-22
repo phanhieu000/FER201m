@@ -5,14 +5,15 @@ import { MoviesContext } from "../../App";
 
 function RightContent() {
 
-    const { movies, currentPath, categories, comments } = useContext(MoviesContext);
+    const { movies, currentPath, comments } = useContext(MoviesContext);
+    const localCategories = JSON.parse(localStorage.getItem('categories'))
 
     const getCategoryID = () => {
-        return categories.find(category => category.url.split('/')[1] === currentPath).id
+        return {...localCategories.find(category => category.url === currentPath)}.id
     }
-
+    
     const getCategory = (id) => {
-        return categories.find(e => e.id == id)
+        return localCategories.find(e => e.id == id)
     }
 
     const getStar = (movieId) => {
@@ -23,8 +24,6 @@ function RightContent() {
 
         return Number(count / currentComments.length)
     }
-
-    console.log(currentPath)
 
 
     return (
@@ -42,8 +41,8 @@ function RightContent() {
                                         <div className="card-body my-2">
                                             <h6 className="card-title text-center" style={{ height: '3rem' }}>{movie.title}</h6>
                                             <p className="card-text px-2">Thể Loại: {getCategory(movie.categoryId).title}</p>
-                                            <p className="card-text px-2">Rate: {
-                                                (getStar(movie.id).isNaN ? 'Chưa Có Đánh Giá' : getStar(movie.id))
+                                            <p className="card-text px-2">Đánh Giá: {
+                                                (getStar(movie.id).isNaN == true ? 'Chưa Có Đánh Giá' : getStar(movie.id) + "/5")
                                             }</p>
                                         </div>
 
