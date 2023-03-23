@@ -36,14 +36,19 @@ function Login({ setToken, setTokens }) {
 
                 if (!process) {
                     setMessage('UserName or Password Không đúng !')
-
                 } else {
-                    setMessage('')
-                    const user = { ...process }
-                    sessionStorage.setItem('user', JSON.stringify(user))
-                    setTokens(user)
-                    setToken(user)
-                    navigate(-1)
+                    if(process?.active === false){
+                        setMessage('Tài khoản của bạn đã bị khóa !')
+                        return
+                    }else {
+                        setMessage('')
+                        const user = { ...process }
+                        sessionStorage.setItem('user', JSON.stringify(user))
+                        setTokens(user)
+                        setToken(user)
+                        navigate(-1)
+                    }
+                    
                 }
             } else {
                 setMessagePassword('Chưa Nhập Password !');

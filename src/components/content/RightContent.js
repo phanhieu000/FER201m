@@ -17,21 +17,23 @@ function RightContent() {
     }
 
     const getStar = (movieId) => {
-        const currentComments = comments.filter(comment => comment.movieId == movieId)
+        const commentsOfMovie = comments.filter(comment => comment.movieId == movieId)
 
         let count = 0
-        currentComments.reduce((acc, cur) => count += cur.rate, 0)
+        commentsOfMovie.reduce((acc, cur) => count += cur.rate, 0)
+        const size = commentsOfMovie.length
 
-        return Number(count / currentComments.length)
+        if (size === 0) return 0
+        return Number(count / size)
+
     }
 
 
     return (
         <div className="row d-flex align-self-stretch mt-3">
-
             {
                 movies.map((movie, index) => {
-                    if (movie.categoryId == getCategoryID())
+                    if (movie.categoryId == getCategoryID() && movie.active === true)
                         return (
                             <div key={index} className="col-2 px-2 my-2">
                                 <div className="bg-light rounded" >
@@ -42,7 +44,7 @@ function RightContent() {
                                             <h6 className="card-title text-center" style={{ height: '3rem' }}>{movie.title}</h6>
                                             <p className="card-text px-2">Thể Loại: {getCategory(movie.categoryId).title}</p>
                                             <p className="card-text px-2">Đánh Giá: {
-                                                (getStar(movie.id).isNaN == true ? 'Chưa Có Đánh Giá' : getStar(movie.id) + "/5")
+                                                (getStar(movie.id) === 0 ? 'Chưa Có Đánh Giá' : getStar(movie.id) + "/5 Star")
                                             }</p>
                                         </div>
 
@@ -60,8 +62,6 @@ function RightContent() {
                                 </div>
                             </div>
                         )
-
-
                 })
             }
         </div>

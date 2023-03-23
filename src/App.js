@@ -1,21 +1,19 @@
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
-import Login from './components/auth/Login';
-import Header from './components/header/Header';
-import Register from './components/auth/Register';
-import Home from './components/content/home/Home.js';
-import Content from './components/content/Content';
-
 import { createContext, useEffect, useState } from 'react';
-import Detail from './components/content/Detail';
 
 /** Data **/
 import Movies from './components/data/movies.json';
 import Accounts from './components/data/accounts.json'
 import Comments from './components/data/comments.json'
 import Categories from './components/data/categories.json'
-import Movie from './components/content/details/Movie';
 /** Data **/
+
+/** **/
+import Dashboard from './components/dashboard/Dashboard';
+import Main from './components/content/home/Main';
+/** **/
+
 
 export const MoviesContext = createContext();
 
@@ -50,13 +48,13 @@ function App() {
 
 	const [accounts, setAccounts] = useState([])
 
-	const [subCategories, setSubCategories] = useState([...new Set(movies.map((movie) => movie.subCategory))])
+	// const [subCategories, setSubCategories] = useState([...new Set(movies.map((movie) => movie.subCategory))])
 
 	const [currentPath, setCurrentPath] = useState('');
 
 	const [comments, setComments] = useState(JSON.parse(localStorage.getItem('comments')))
 
-	// const [doSomethingDone, setDoSomethingDone] = useState(false)
+	const navigate = useNavigate();
 
 
 	useEffect(() => {
@@ -64,7 +62,7 @@ function App() {
 	}, [location])
 
 	useEffect(() => {
-		localStorage.setItem('movies', JSON.stringify(Movies))
+		// localStorage.setItem('movies', JSON.stringify(Movies))
 		const localMovies = JSON.parse(localStorage.getItem('movies'))
 		setMovies(localMovies)
 	}, [])
@@ -75,15 +73,11 @@ function App() {
 		setAccounts(localAccounts)
 	}, [])
 
-	// useEffect(() => {
-	// 	setCategories([...new Set(movies.map((movie) => movie.subCategory))])
-	// }, [movies])
-
-	// useEffect(() => {
+	useEffect(() => {
 		// localStorage.setItem('comments', JSON.stringify(Comments))
-	// 	const localComments = JSON.parse(localStorage.getItem('comments'))
-	// 	setComments(localComments)
-	// }, [])
+		const localComments = JSON.parse(localStorage.getItem('comments'))
+		setComments(localComments)
+	}, [])
 
 	useEffect(() => {
 		// localStorage.setItem('categories', JSON.stringify(Categories))
@@ -91,53 +85,27 @@ function App() {
 		setCategories(localCategories)
 	}, [])
 
-	// console.log(categories)
 
 	const [token, setToken] = useState(getToken())
 
 	return (
 		<MoviesContext.Provider value={{
 			movies, setMovies,
-			currentPath, setCurrentPath, subCategories,
-			token, setToken, removeToken,
+			currentPath, setCurrentPath,
+			token, setToken, setTokens, removeToken,
 			accounts, setAccounts,
-			categories,
+			categories, setCategories,
 			comments, setComments,
-			getCategory
+			getCategory, 
+			location, navigate
 		}}>
-			<div className='container-fluid ' style={{ minHeight: '761px', padding: '0 3rem' }}>
-				<Header />
-
-				<Routes >
-					<Route path='/' element={<Home />}></Route>
-					{
-						token == null && (
-							<>
-								<Route path='/login' element={<Login setToken={setToken} setTokens={setTokens} />} />
-								<Route path='/register' element={<Register />} />
-							</>
-						)
-
-					}
-
-					{
-						categories.map((category, index) => {
-							return (
-								<Route key={index} path={`${category.url}/*`} element={<Content />}>
-									<Route path=':subcategory' element={<Content />} />
-								</Route>
-							)
-						})
-					}
-
-					<Route path="/movie/*">
-						<Route path=":id" element={<Movie />} />
-
-					</Route>
-
+			<>
+				<Routes>
+					<Route path='/*' element={<Main />}></Route>
+					<Route path='/dashboard/*' element={<Dashboard  />}></Route>
 				</Routes>
-
-			</div>
+			</>
+			
 		</MoviesContext.Provider>
 
 	);

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { memo, useContext, useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { MoviesContext } from "../../../App"
 
@@ -6,7 +6,7 @@ import { MoviesContext } from "../../../App"
 
 function Movie() {
 
-    const { movies, comments, token, setComments, accounts } = useContext(MoviesContext)
+    const { movies, comments, token, setComments, accounts, categories } = useContext(MoviesContext)
     const { id } = useParams()
 
     const [star, setStar] = useState(0)
@@ -19,11 +19,16 @@ function Movie() {
 
     const navigate = useNavigate()
 
+    const movie = movies.find(movie => movie.id == id)
+
+
     const getAccount = (id) => {
         return accounts.find(e => e.id == id)
     }
 
-
+    const getCategory = () => {
+        return { ...categories.find(e => e.id == movie.categoryId) }
+    }
     useEffect(() => {
         if (token) {
             comments.map(comment => {
@@ -37,14 +42,17 @@ function Movie() {
 
     }, [comments])
 
-    const movie = movies.find(movie => movie.id == id)
 
-    const getStart = () => {
+    const getStar = (movieId) => {
         const currentComments = comments.filter(comment => comment.movieId == id)
 
         let count = 0
         currentComments.reduce((acc, cur) => count += cur.rate, 0)
-        return count / currentComments.length
+        const size = currentComments.length
+
+        if (size === 0) return 0
+        return Number(count / size)
+
     }
 
     const handleClickStar = (e) => {
@@ -118,41 +126,43 @@ function Movie() {
         )
     }
 
-
     return (
-        <div className="container " style={{ paddingTop: '80px' }}>
+        <div className="container " style={{ paddingTop: '100px' }}>
             {
                 movie && (
                     <div className=" d-flex justify-content-center align-items-center" >
                         <div className="card w-100" >
-                            <div className="card-body d-flex" >
+                            <div className="card-body row" >
                                 <div className="col-4">
                                     <img
-                                        className="w-100 p-0"
+                                        className="w-100 p-0 rounded"
                                         // style={{ height: '100%' }}
                                         src={movie.image}
+                                        style={{ height: '36rem' }}
                                         alt="..." />
+
                                 </div>
 
                                 <div className="col-8 overflow-auto"
-                                    style={{ height: '34rem', paddingRight: '10rem!important', paddingLeft: '2rem' }} >
+                                    style={{ height: '36rem', paddingRight: '10rem!important', paddingLeft: '2rem' }} >
                                     <div className="border-bottom pb-2">
 
                                         <div className="d-flex justify-content-between">
                                             <h1 className="card-title">{movie.title}</h1>
-                                            <button type="button" class="border-0 my-2 mx-3 fa fa-arrow-circle-left"
+                                            <button type="button" className="border-0 my-2 mx-3 fas fa-reply fs-6"
                                                 style={{ fontSize: '16px', backgroundColor: 'unset' }}
                                                 aria-label="Close"
                                                 onClick={() => navigate(-1)}
-                                            ><span className="mx-2 fs-6">Back</span></button>
+                                            ></button>
 
                                         </div>
 
-                                        <p className="card-text p-0"><span className="fw-bold">Thể Loại:</span> </p>
-                                        <p className=""><span className="fw-bold">Điểm Đánh Giá: {getStart()} <span className="star selected" style={{ height: '15px', width: '15px', fontSize: '15px' }} ></span></span> </p>
+                                        <p className="card-text p-0"><span className="">Thể Loại: {getCategory().title}</span> </p>
+                                        <p className=""><span className="">Điểm Đánh Giá: {getStar() === 0 ? 'Chưa Có Đánh Giá' : getStar() + "/5 Star"} {/*<span className="star selected" style={{ height: '15px', width: '15px', fontSize: '15px' }} ></span>*/}</span> </p>
                                         <p className="card-text text-break text-capitalize w-100" style={{ marginRight: '2rem' }}><span className="fw-bold">Mô Tả:</span> {movie.description}</p>
                                     </div>
                                     <div className="mt-3 border-bottom pb-3">
+
                                         {
                                             token && isComment === false ?
                                                 <>
@@ -173,7 +183,7 @@ function Movie() {
                                                     </div>
                                                     <div>
                                                         <span className="">Bình Luận:</span>
-                                                        <textarea cols={20} rows={5} type="text" ref={textRef} className="form-control w-75" />
+                                                        <textarea rows={5}  type="text" ref={textRef} className="form-control w-100" />
 
                                                         <button className="btn btn-primary mt-3" onClick={handleComment}>Đánh Giá</button>
                                                     </div>
@@ -195,8 +205,8 @@ function Movie() {
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <span className="">Bình Luận:</span>
-                                                        <textarea cols={20} rows={5} type="text" defaultValue={currentComment} ref={textRef} className="form-control w-75" ></textarea>
+                                                        <span className="mb-2">Bình Luận:</span>
+                                                        <textarea rows={5} type="text" defaultValue={currentComment} ref={textRef} className="form-control w-100" ></textarea>
 
                                                         <button className="btn btn-primary mt-3" onClick={handleUpdateComment}>Chỉnh Sửa</button>
                                                     </div>
@@ -204,7 +214,6 @@ function Movie() {
                                                 : ''
                                         }
                                     </div>
-
 
                                     <div className="mt-3 border-botttom pt-2">
                                         <h3 className="">Bình Luận: </h3>
@@ -226,7 +235,12 @@ function Movie() {
                                                                                         src="https://icons.veryicon.com/png/o/internet--web/prejudice/user-128.png"
                                                                                         alt="avatar"
                                                                                     />
-                                                                                    <p className="small mb-0 ms-2">{getAccount(comment.accountId).fullName}</p>
+                                                                                    <p className="small mb-0 ms-2">
+                                                                                        {
+                                                                                            token && getAccount(comment.accountId).id == token.id ?
+                                                                                                'You' : getAccount(comment.accountId).fullName
+                                                                                        }
+                                                                                    </p>
                                                                                 </div>
                                                                                 <div className="d-flex flex-row align-items-center">
                                                                                     <p className="small text-muted mb-0">Rate: </p>
@@ -235,10 +249,10 @@ function Movie() {
                                                                                 </div>
                                                                             </div>
                                                                             <figure>
-                                                                                <blockquote class="blockquote">
+                                                                                <blockquote className="blockquote">
                                                                                     <p className="text-capitalize">{comment.content}</p>
                                                                                 </blockquote>
-                                                                                <figcaption class="blockquote-footer">
+                                                                                <figcaption className="blockquote-footer">
                                                                                     Last Update: <cite title="Source Title">{comment.createTime}</cite>
                                                                                 </figcaption>
                                                                             </figure>
@@ -265,4 +279,4 @@ function Movie() {
     )
 }
 
-export default Movie
+export default memo(Movie)
