@@ -1,0 +1,5 @@
+[
+    {"id": 1, "movieId": 1, "accountId": 1, "content": "Phim Hay Lắm", "public": true, "rate": 5, "createTime": "21/03/2023", "updateTime": "21/02/2023"},
+    {"id": 2, "movieId": 2, "accountId": 1, "content": "Phim Hay Lắm 2", "public": true, "rate": 5, "createTime": "21/03/2023", "updateTime": "21/02/2023"}
+
+]
