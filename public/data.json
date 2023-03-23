@@ -1,0 +1,5 @@
+[
+    {"id": 1, "userName": "admin", "password": "admin", "fullName": "Đức Nguu", "gender": "Male", "isPrimeum": true, "active": true, "role": "Admin"},
+    {"id": 2, "userName": "manhduc", "password": "manhduc", "fullName": "Đức Nguu 02", "gender": "Female", "isPrimeum": false, "active": false, "role": "User"},
+    {"id": 3, "userName": "zangpham", "password": "zangpham", "fullName": "Phạm Giang", "gender": "Female", "isPrimeum": true, "active": true, "role": "Admin"}
+]
